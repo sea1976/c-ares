@@ -181,7 +181,7 @@ static int try_again(int errnum)
 
 static ares_ssize_t socket_writev(ares_channel channel, ares_socket_t s, const struct iovec * vec, int len)
 {
-  if (channel->sock_funcs)
+  if (channel->sock_funcs && channel->sock_funcs->asendv)
     return channel->sock_funcs->asendv(s, vec, len, channel->sock_func_cb_data);
 
   return writev(s, vec, len);
@@ -189,7 +189,7 @@ static ares_ssize_t socket_writev(ares_channel channel, ares_socket_t s, const s
 
 static ares_ssize_t socket_write(ares_channel channel, ares_socket_t s, const void * data, size_t len)
 {
-  if (channel->sock_funcs)
+  if (channel->sock_funcs && channel->sock_funcs->asendv)
     {
       struct iovec vec;
       vec.iov_base = (void*)data;
@@ -331,7 +331,7 @@ static ares_ssize_t socket_recvfrom(ares_channel channel,
    struct sockaddr *from,
    ares_socklen_t *from_len)
 {
-   if (channel->sock_funcs)
+   if (channel->sock_funcs && channel->sock_funcs->arecvfrom)
       return channel->sock_funcs->arecvfrom(s, data, data_len,
 	 flags, from, from_len,
 	 channel->sock_func_cb_data);
@@ -348,7 +348,7 @@ static ares_ssize_t socket_recv(ares_channel channel,
    void * data,
    size_t data_len)
 {
-   if (channel->sock_funcs)
+   if (channel->sock_funcs && channel->sock_funcs->arecvfrom)
       return channel->sock_funcs->arecvfrom(s, data, data_len, 0, 0, 0,
 	 channel->sock_func_cb_data);
 
@@ -1443,7 +1443,7 @@ void ares__free_query(struct query *query)
 ares_socket_t ares__open_socket(ares_channel channel,
                                 int af, int type, int protocol)
 {
-  if (channel->sock_funcs)
+  if (channel->sock_funcs && channel->sock_funcs->asocket)
     return channel->sock_funcs->asocket(af,
                                         type,
                                         protocol,
@@ -1457,7 +1457,7 @@ int ares__connect_socket(ares_channel channel,
                          const struct sockaddr *addr,
                          ares_socklen_t addrlen)
 {
-  if (channel->sock_funcs)
+  if (channel->sock_funcs && channel->sock_funcs->aconnect)
     return channel->sock_funcs->aconnect(sockfd,
                                          addr,
                                          addrlen,
@@ -1468,7 +1468,7 @@ int ares__connect_socket(ares_channel channel,
 
 void ares__close_socket(ares_channel channel, ares_socket_t s)
 {
-  if (channel->sock_funcs)
+  if (channel->sock_funcs && channel->sock_funcs->aclose)
     channel->sock_funcs->aclose(s, channel->sock_func_cb_data);
   else
     sclose(s);
