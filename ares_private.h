@@ -103,7 +103,7 @@
 #include "ares_strdup.h"
 #include "ares_strsplit.h"
 
-#ifndef HAVE_STRCASECMP
+#if !defined(HAVE_STRCASECMP) && !defined (strcasecmp)
 #  include "ares_strcasecmp.h"
 #  define strcasecmp(p1,p2) ares_strcasecmp(p1,p2)
 #endif
