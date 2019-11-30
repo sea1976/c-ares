@@ -136,7 +136,6 @@ SET (HAVE_LIBSOCKET FALSE)
 SET (HAVE_LIBRT FALSE)
 ENDIF()
 
-
 # Look for necessary includes
 CHECK_INCLUDE_FILES (sys/types.h           HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILES (sys/socket.h          HAVE_SYS_SOCKET_H)
